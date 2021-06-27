@@ -5,20 +5,21 @@
 
 #define GAME_TITLE      "FLAPPYBIRD"
 #define GAME_ID         "JANEY_N1"
-#define GAME_VERSION    "1.0.2.0"
+#define GAME_VERSION    "1.0.4.5"
 #define GAME_RELEASED   "2021-2-7"
+#define APP_DESIGNED    "JaneyXu"
 
+#define GAME_FPS	30
 
-#define GAME_FPS	60
-
-#define GAME_OVER	0
+#define GAME_OVER	    0
 #define GAME_CONTINUE	1
-#define GAME_MENU 2
+#define GAME_MENU       2
+#define GAME_PAUSE      3
 
 
-#define GameLEVEL_EASY	0
-#define GameLEVEL_MID	1
-#define GameLEVEL_HARD	2
+// #define GameLEVEL_EASY	0
+// #define GameLEVEL_MID	1
+// #define GameLEVEL_HARD	2
 
 #define FlappyBirdScore_ADDR	64
 #define FlappyBirdScore_ADDR_END	FlappyBirdScore_ADDR+1
@@ -59,7 +60,7 @@ void updatehighscore();
 void renderhigiscore();
 
 extern Arduboy2 arduboy;
-extern bool g_gamestatus;
+extern uint8_t g_gamestatus;
 extern unsigned char g_birdStatus;
 extern unsigned char g_menustatus;
 extern unsigned char per_menustatus;

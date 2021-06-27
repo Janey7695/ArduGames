@@ -123,7 +123,7 @@ At24c myeep;
 
 uint16_t g_score;
 uint16_t g_highscore;
-bool g_gamestatus;
+uint8_t g_gamestatus;
 unsigned char g_birdStatus;
 unsigned char g_menustatus;
 unsigned char per_menustatus=0;
@@ -133,7 +133,8 @@ uint8_t lastButtonState;
 uint8_t currentButtonState;
 static float pipemovespeed = 40.0;
 static float birdflayupspeed = 50.0;
-static float deltaFullspeed = 4.0;
+static float deltaFullspeed = 5.0;
+const float delatpipemovespeed = 10.0;
 
 // --------------  绘图函数 ------------------
 
@@ -213,25 +214,26 @@ void ShowScore()
 
 void DrawBirdAndPipe()
 {
-	if(g_birdStatus==BirdFULL)
-	{
-		ShowScore();
-		StickBirdInCanv(30,g_Bird.y,Birdflyup);
-		Drawpipe(g_Pipehead);
-		Drawpipe(g_Pipehead->nextpillar);
-		Drawpipe(g_Pipehead->nextpillar->nextpillar);
-	}
-	else
-	{
-		ShowScore();
-		StickBirdInCanv(30,g_Bird.y,Birdflydown);
-		Drawpipe(g_Pipehead);
-		Drawpipe(g_Pipehead->nextpillar);
-		Drawpipe(g_Pipehead->nextpillar->nextpillar);
-		// DisPlay();
-		// delay_ms(frameInterval);
-		g_birdStatus=BirdFULL;
-	}
+    if(g_gamestatus == GAME_PAUSE)  drawstring(20,30,"PAUSE",3);
+        if(g_birdStatus==BirdFULL)
+        {
+            ShowScore();
+            StickBirdInCanv(30,g_Bird.y,Birdflyup);
+            Drawpipe(g_Pipehead);
+            Drawpipe(g_Pipehead->nextpillar);
+            Drawpipe(g_Pipehead->nextpillar->nextpillar);
+        }
+        else
+        {
+            ShowScore();
+            StickBirdInCanv(30,g_Bird.y,Birdflydown);
+            Drawpipe(g_Pipehead);
+            Drawpipe(g_Pipehead->nextpillar);
+            Drawpipe(g_Pipehead->nextpillar->nextpillar);
+            // DisPlay();
+            // delay_ms(frameInterval);
+            g_birdStatus=BirdFULL;
+        }
 }
 
 
@@ -320,17 +322,16 @@ void CheckCollision(void)
 		g_Pipehead->x=g_Pipehead->nextpillar->nextpillar->x+60;
 		g_Pipehead->y=random(3);
 		g_Pipehead=g_Pipehead->nextpillar;
+        if(g_score % 10 == 0){
+            pipemovespeed+=delatpipemovespeed;
+        }
 	}
 }
 
 void CheckGameStatus()
 {
-	if(g_Bird.y>64)
-	{
-		g_gamestatus=GAME_OVER;
-	}
-	if(g_Pipehead->x<=40)
-		CheckCollision();
+    if(g_Bird.y>64)     g_gamestatus=GAME_OVER;
+	if(g_Pipehead->x<=40)   CheckCollision();
 }
 
 void GameEnd()
@@ -387,6 +388,10 @@ void initgame(){
 	g_Bird.y=20;
 	g_Bird.fullspeed=0;
 
+    pipemovespeed = 40.0;
+    birdflayupspeed = 50.0;
+    deltaFullspeed = 5.0;
+
 	g_Pipehead=&pipe1;
 	pipe1.nextpillar=&pipe2;
 	pipe2.nextpillar=&pipe3;
@@ -406,11 +411,15 @@ void initgame(){
 }
 
 void updategame(){
+    if(buttonDown(A_BUTTON|B_BUTTON))   {
+        g_gamestatus = (g_gamestatus == GAME_PAUSE)?GAME_CONTINUE:GAME_PAUSE;
+    }
+
     if(buttonPressed(LEFT_BUTTON|RIGHT_BUTTON|DOWN_BUTTON|UP_BUTTON)){
         g_birdStatus=BirdRISE;
     }
 
-    if(g_gamestatus != GAME_OVER){
+    if(g_gamestatus != GAME_OVER & g_gamestatus!=GAME_PAUSE){
         PipeMove(pipemovespeed);
         CheckGameStatus();
         BirdFreeFull();
@@ -436,7 +445,6 @@ void rendergame(){
 void inithighscore(){
     g_score = 0;
     g_highscore = eepReaduint16(FlappyBirdScore_ADDR);
-    
 }
 
 void updatehighscore(){
