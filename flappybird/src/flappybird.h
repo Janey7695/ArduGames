@@ -5,7 +5,7 @@
 
 #define GAME_TITLE      "FLAPPYBIRD"
 #define GAME_ID         "JANEY_N1"
-#define GAME_VERSION    "1.0.4.5"
+#define GAME_VERSION    "1.0.4.6"
 #define GAME_RELEASED   "2021-2-7"
 #define APP_DESIGNED    "JaneyXu"
 

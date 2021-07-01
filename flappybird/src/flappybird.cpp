@@ -411,7 +411,7 @@ void initgame(){
 }
 
 void updategame(){
-    if(buttonDown(A_BUTTON|B_BUTTON))   {
+    if(buttonDown(A_BUTTON|B_BUTTON) & g_gamestatus!=GAME_OVER)   {
         g_gamestatus = (g_gamestatus == GAME_PAUSE)?GAME_CONTINUE:GAME_PAUSE;
     }
 
