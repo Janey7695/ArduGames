@@ -128,13 +128,14 @@ unsigned char g_birdStatus;
 unsigned char g_menustatus;
 unsigned char per_menustatus=0;
 bool ifrender = false;
-
+bool ifupdatescore = false;
 uint8_t lastButtonState;
 uint8_t currentButtonState;
 static float pipemovespeed = 40.0;
 static float birdflayupspeed = 50.0;
 static float deltaFullspeed = 5.0;
 const float delatpipemovespeed = 10.0;
+uint16_t topTenScore[10] = {0};
 
 // --------------  绘图函数 ------------------
 
@@ -343,8 +344,10 @@ void GameEnd()
     else{
         drawstring(18,0,"NEW RECODE",2);
         drawnumber(56,30,g_score,4);
-        updatehighscore();
+        // updatehighscore();
     }
+    if(ifupdatescore)   updatehighscore();
+    
 }
 
 
@@ -385,6 +388,7 @@ void rendermenu(){
 void initgame(){
     g_score=0;
 	g_gamestatus=GAME_CONTINUE;
+    ifupdatescore = true;
 	g_Bird.y=20;
 	g_Bird.fullspeed=0;
 
@@ -445,17 +449,36 @@ void rendergame(){
 void inithighscore(){
     g_score = 0;
     g_highscore = eepReaduint16(FlappyBirdScore_ADDR);
+    for(int l = 0;l < 10;l++){
+        topTenScore[l] = eepReaduint16(FlappyBirdScore_ADDR+2*l);
+    }
+}
+
+void InsertHighlight(int tobeplace,uint16_t value){
+    for(int l = 9;l > tobeplace;l--){
+        topTenScore[l] = topTenScore[l-1];
+    }
+    topTenScore[tobeplace] = value;
 }
 
 void updatehighscore(){
     if(g_menustatus != HeightList){
         if(g_score > g_highscore){
             g_highscore = g_score;
-            eepWriteuint16(FlappyBirdScore_ADDR,g_highscore);
+            InsertHighlight(0,g_highscore);
+            for(int l = 0;l<10;l++) eepWriteuint16(FlappyBirdScore_ADDR+2*l,topTenScore[l]);
         }
-        else if(g_highscore == 0xffff){
-            eepWriteuint16(FlappyBirdScore_ADDR,0);
+        else{
+            for(int l = 0;l < 10;l++){
+                if(topTenScore[l] < g_score){
+                    InsertHighlight(l,g_score);
+                    break;
+                }
+            }
+            for(int l = 0;l<10;l++) eepWriteuint16(FlappyBirdScore_ADDR+2*l,topTenScore[l]);
         }
+
+        ifupdatescore = false;
     }
     else{
         if(buttonDown(A_BUTTON|B_BUTTON)) {
@@ -466,7 +489,15 @@ void updatehighscore(){
 }
 
 void renderhigiscore(){
-    drawstring(30,0,"HIGIEST",2);
-    drawnumber(56,30,g_highscore,4);
+    for(int l = 0;l < 5;l++){
+        arduboy.drawChar(0,l*14,'0'+l+1,1,0,1);
+        drawnumber(30,l*14,topTenScore[l],1);
+    }
+    for(int l = 0;l < 4;l++){
+        arduboy.drawChar(60,l*14,'5'+l+1,1,0,1);
+        drawnumber(90,l*14,topTenScore[l+5],1);
+    }
+    drawstring(60,4*14,"10",1);
+    drawnumber(90,4*14,topTenScore[9],1);
     ifrender = false;
 }
