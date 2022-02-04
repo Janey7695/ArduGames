@@ -26,3 +26,8 @@
 
 ### JANEY_N1 - FlappyBird
 尝试在管道中穿梭，别磕到头！ - 仿制FLAPPYBIRD
+
+### JANEY_N2 - Hopper
+
+在弹跳中向上进发,避免掉入虚空!  - 修改自https://github.com/obono/ArduboyWorks/tree/master/hopper
+
