@@ -6,6 +6,15 @@
 /*  Defines  */
 
 //#define DEBUG
+
+#define GAME_TITLE      "HOPPER"
+#define GAME_ID         "JANEY_N2"
+#define GAME_VERSION    "1.0.0.0"
+#define GAME_RELEASED   "2021-2-7"
+#define APP_DESIGNED    "JaneyXu"
+
+
+//The  authorship  原作者信息
 #define APP_TITLE       "HOPPER"
 #define APP_CODE        "OBN-Y02"
 #define APP_VERSION     "0.22"
